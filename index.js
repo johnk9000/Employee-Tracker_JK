@@ -1,4 +1,5 @@
 var mysql = require("mysql");
+var inquirer = require("inquirer");
 var connection = mysql.createConnection({
     host: "localhost",
   
@@ -20,5 +21,25 @@ var connection = mysql.createConnection({
   });
 
   // INQUIRER ==============================================================================
+function init() {
+    inquirer.prompt({
+        type: "list",
+        message: "What would you like to do?",
+        name: "choice",
+        choices: [
+            "View All Employees",
+            "View All Employees by Department",
+            "View All Employees by Manager",
+            "Add Employee",
+            "Edit Employee",
+            "Remove Emplyee",
+        ],
+    })
+}
 
-  // QUERY INJECTIONS
+
+// QUERY INJECTIONS ======================================================================
+
+// INIT ==================================================================================
+init();
+
