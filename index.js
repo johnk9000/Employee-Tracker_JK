@@ -1,14 +1,12 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+const { Console } = require("console");
 var connection = mysql.createConnection({
     host: "localhost",
-  
     // Your port; if not 3306
     port: 3306,
-  
     // Your username
     user: "root",
-  
     // Your password
     password: "Welcome_1!",
     database: "hw10_employee_tracker_db"
@@ -19,7 +17,6 @@ var connection = mysql.createConnection({
     console.log("connected as id " + connection.threadId);
     init();
   });
-
   // INQUIRER ==============================================================================
 function init() {
     inquirer.prompt({
@@ -57,11 +54,12 @@ function init() {
                 removeEmployee();
                 break;
         }
-        navux()
     })
 }
 
-function navux() {
+async function navux() {
+    try{
+        console.log("--------------- \n")
     inquirer.prompt({
         type: "list",
         message: new inquirer.Separator(),
@@ -77,8 +75,10 @@ function navux() {
             console.log("Ending session with " + connection);
             connection.end();
         }
-    }
-    )
+    })
+} catch(err) {
+    console.log(err)
+}
 }
 // QUERY INJECTIONS ======================================================================
 
@@ -89,47 +89,65 @@ function viewEmployees() {
         if (err) throw err;
             //console.log(res) // DEL
         console.table(res)
+        navux();
     })
 }
 
-function viewDepartment() {
-    let deptChoice = ["Sales", "Engineering"]
+function viewDepartment() {        
+    try {
+    let deptChoice = ["Sales", "Engineering", new inquirer.Separator()]
     let inqSet = {type: 'list', message: 'Departments: ', name: "departments", choices: deptChoice}
-    let query = "SELECT * FROM department WHERE department_id="
-    inquirer.prompt(inqSet),then( ans => {
-        switch (ans.choices) {
+    let query = "SELECT employee.first_name, employee.last_name, department.name, department.role, department.title " 
+    query += "FROM employee LEFT JOIN department ON employee.role_id = department.id WHERE ?"
+    inquirer.prompt(inqSet).then( ans => {
+        console.log('you chose: ' + ans.departments)
+        switch (ans.departments) {
             case "Sales":
-            query += "100";
+            query += 100;
             break;
             case "Engineering":
-            query += "200";
+            query += 200;
             break;
         }
-        connection.query(query, function(err, res) {
+        connection.query(query, { department_id: id }, function(err, res) {
             if (err) throw err;
+                console.log('gathering personell... \n')
+                    console.log(res)
             console.table(res)
         })
+        navux();
     })
+    } catch(err) {
+        console.log(err)
+    }
 }
-
-function viewManager() {
-    let mngrChoice = ["Alice", "John"]
+async function viewManager() {
+    try {
+    let mngrChoice = ["Alice", "John", new inquirer.Separator()]
     let inqSet = {type: 'list', message: 'Managers: ', name: "managers", choices: mngrChoice}
-    inquirer.prompt(inqSet),then( ans => {
-        let query = "SELECT * FROM employee WHERE manager_id="
-        switch (ans.choices) {
+    inquirer.prompt(inqSet).then( ans => {
+        let query = "SELECT employee.first_name, employee.last_name, department.name, department.role, department.title "
+        query += "FROM employee LEFT JOIN department ON employee.role_id = department.id WHERE employee.manager_id="
+            console.log('you chose: ' + ans.managers)
+        switch (ans.managers) {
             case "Alice":
-            query += "1";
-            break;
+                query += 1;
+                break;
             case "John":
-            query += "2";
-            break;
+                query += 2;
+                break;
         }
         connection.query(query, function(err, res) {
             if (err) throw err;
+                console.log('gathering personell... \n')
+                console.log(res)
             console.table(res)
         })
+        navux();
     })
+    } catch(err) {
+        console.log(err)
+    }
 }
 
 // add/edit/remove -----------------------------------------------------------------------
