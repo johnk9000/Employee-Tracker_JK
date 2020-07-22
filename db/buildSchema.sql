@@ -35,7 +35,7 @@ INSERT INTO department (name, role, title, salary, department_id)
 VALUES ("Engineering", "Developer", "Software Developer", 70000, 200);
 
 INSERT INTO department (name, role, title, salary, department_id)
-VALUES ("Engineering", "Manager", "Engineering Manager", 110000, 200);
+VALUES ("Engineering", "Management", "Engineering Manager", 110000, 200);
 -- Seeding 6 Employees
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES("Alice", "Anonymous", 1, 1);
