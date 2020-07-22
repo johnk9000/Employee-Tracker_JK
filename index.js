@@ -263,11 +263,13 @@ function removeEmployee() {
         let query = "SELECT * FROM employee"
         connection.query(query, function(err, res) {
             if (err) throw err;
-            console.log(res)
+                //console.log(res) //DEL
             const employeeList = [];
+            const identification = [];
             res.forEach(entry => {
                 employeeList.push(entry.first_name + " " + entry.last_name)
                     //console.log(entry.first_name + " " + entry.last_name) //DEL
+                    identification.push(entry.id)
             })
             inquirer.prompt({
                 type: 'list', 
@@ -275,7 +277,9 @@ function removeEmployee() {
                 name: "employee", 
                 choices: employeeList
             }).then(ans => {
-                var personId = employeeList.indexOf(ans.employee) + 1;
+                
+                var index = employeeList.indexOf(ans.employee);
+                var personId = identification[index];
                 if(personId > 0){
                     let query = "DELETE FROM employee WHERE id= " + personId + ";"
                     connection.query(query, function(err, res) {
