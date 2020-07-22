@@ -29,7 +29,7 @@ function init() {
             "View All Employees by Manager",
             "Add Employee",
             "Edit Employee",
-            "Remove Emplyee",
+            "Remove Employee",
         ],
     }).then(ans => {
             console.log(ans)
@@ -50,7 +50,7 @@ function init() {
             case "Edit Employee":
                 editEmployee();
                 break;
-            case "Remove Emplyee":
+            case "Remove Employee":
                 removeEmployee();
                 break;
         }
@@ -211,8 +211,7 @@ try {
             employeeList.push(entry.first_name + " " + entry.last_name)
                 console.log(entry.first_name + " " + entry.last_name) //DEL
 
-        })
-            
+        }) 
         let mngrChoice = ["Alice", "John", new inquirer.Separator()]
         let roleChoice = ["Sales Person", "Engineer", "Developer", new inquirer.Separator()]
         let editSet = [
@@ -264,25 +263,31 @@ function removeEmployee() {
         let query = "SELECT * FROM employee"
         connection.query(query, function(err, res) {
             if (err) throw err;
+            console.log(res)
             const employeeList = [];
             res.forEach(entry => {
                 employeeList.push(entry.first_name + " " + entry.last_name)
                     //console.log(entry.first_name + " " + entry.last_name) //DEL
             })
-        })
-        inquirer.prompt({type: 'list', message: 'Employee: ', name: "employee", choices: employeeList},).then(ans => {
-            var personId = employeeList.indexOf(ans.employee) + 1;
-            if(personId > 0){
-                let query = "DELETE FROM employee WHERE id= " + personId + ";"
-                connection.query(query, function(err, res) {
-                    if (err) throw err;
-                        console.log('removing personnel... ' + ans.employee + '\n')
-                            //console.log(res) //--verbose
-                    console.table(res)
-                })
-                navux()
-            }
-        })
+            inquirer.prompt({
+                type: 'list', 
+                message: 'Employee: ', 
+                name: "employee", 
+                choices: employeeList
+            }).then(ans => {
+                var personId = employeeList.indexOf(ans.employee) + 1;
+                if(personId > 0){
+                    let query = "DELETE FROM employee WHERE id= " + personId + ";"
+                    connection.query(query, function(err, res) {
+                        if (err) throw err;
+                            console.log('removing personnel... ' + ans.employee + '\n')
+                                //console.log(res) //--verbose
+                        console.table(res)
+                    })
+                    navux()
+                }
+            })
+        }) 
     } catch(err) {
         
     }
