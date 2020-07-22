@@ -84,7 +84,8 @@ async function navux() {
 
 // views ---------------------------------------------------------------------------------
 function viewEmployees() {
-    let query = "SELECT * FROM employee"
+    let query = "SELECT employee.first_name, employee.last_name, department.name, department.role, department.title "
+    query+= "FROM employee INNER JOIN department ON employee.role_id = department.id"
     connection.query(query, function(err, res) {
         if (err) throw err;
             //console.log(res) // DEL
@@ -164,7 +165,7 @@ function addEmployee() {
         ]
         inquirer.prompt(editSet).then( ans => {
             let { nameFirst, nameLast, roleId, mngrId } = ans;
-            switch (ans.mngrId) {
+            switch (mngrId) {
                 case "Alice":
                     var id = 1;
                     break;
@@ -172,7 +173,7 @@ function addEmployee() {
                     var id = 2;
                     break;
             }
-            switch (ans.roleId) {
+            switch (roleId) {
                 case "Sales Person":
                     var rid = 1;
                     break;
@@ -208,7 +209,8 @@ try {
         const employeeList = [];
         res.forEach(entry => {
             employeeList.push(entry.first_name + " " + entry.last_name)
-            console.log(entry.first_name + " " + entry.last_name)
+                console.log(entry.first_name + " " + entry.last_name) //DEL
+
         })
             
         let mngrChoice = ["Alice", "John", new inquirer.Separator()]
@@ -219,7 +221,37 @@ try {
         {type: 'list', message: 'Reports to: ', name: "mngrId", choices: mngrChoice},
         ]
         inquirer.prompt(editSet).then( ans => {
-            console.log(ans)
+            let { employee, roleId, mngrId } = ans;
+            switch (roleId) {
+                case "Sales Person":
+                    var rid = 1;
+                    break;
+                case "Engineer":
+                    var rid = 3;
+                    break;
+                case "Developer":
+                    var rid = 4
+                    break;
+            }
+            switch (mngrId) {
+                case "Alice":
+                    var id = 1;
+                    break;
+                case "John":
+                    var id = 2;
+                    break;
+            }
+            var personId = employeeList.indexOf(employee) + 1;
+            if(personId > 0){
+                let query = "UPDATE employee SET role_id = " + rid + ", manager_id = " + id + " WHERE id = " + personId + ";"
+                connection.query(query, function(err, res) {
+                    if (err) throw err;
+                        console.log('editing personnel... ' + employee + '\n')
+                            //console.log(res) //--verbose
+                    console.table(res)
+                })
+                navux()
+            }
         })
     })
     } catch(err) {
@@ -229,7 +261,28 @@ try {
 
 function removeEmployee() {
     try {
-
+        let query = "SELECT * FROM employee"
+        connection.query(query, function(err, res) {
+            if (err) throw err;
+            const employeeList = [];
+            res.forEach(entry => {
+                employeeList.push(entry.first_name + " " + entry.last_name)
+                    //console.log(entry.first_name + " " + entry.last_name) //DEL
+            })
+        })
+        inquirer.prompt({type: 'list', message: 'Employee: ', name: "employee", choices: employeeList},).then(ans => {
+            var personId = employeeList.indexOf(ans.employee) + 1;
+            if(personId > 0){
+                let query = "DELETE FROM employee WHERE id= " + personId + ";"
+                connection.query(query, function(err, res) {
+                    if (err) throw err;
+                        console.log('removing personnel... ' + ans.employee + '\n')
+                            //console.log(res) //--verbose
+                    console.table(res)
+                })
+                navux()
+            }
+        })
     } catch(err) {
         
     }

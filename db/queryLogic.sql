@@ -19,4 +19,8 @@ ON employee.role_id = department.id
 WHERE employee.manager_id = 1; -- change ID val here to select manager (1, 2, 3, ...)
 
 -- Update employee roles
-SELECT * FROM
+UPDATE employee
+SET role_id = 2, manager_id = 2
+WHERE id = 6;
+
+DELETE FROM employee WHERE id=7;
