@@ -207,9 +207,11 @@ try {
     connection.query(query, function(err, res) {
         if (err) throw err;
         const employeeList = [];
+        const identification = [];
         res.forEach(entry => {
             employeeList.push(entry.first_name + " " + entry.last_name)
-                console.log(entry.first_name + " " + entry.last_name) //DEL
+                //console.log(entry.first_name + " " + entry.last_name) //DEL
+                identification.push(entry.id)
 
         }) 
         let mngrChoice = ["Alice", "John", new inquirer.Separator()]
@@ -240,7 +242,8 @@ try {
                     var id = 2;
                     break;
             }
-            var personId = employeeList.indexOf(employee) + 1;
+            var index = employeeList.indexOf(ans.employee);
+                var personId = identification[index];
             if(personId > 0){
                 let query = "UPDATE employee SET role_id = " + rid + ", manager_id = " + id + " WHERE id = " + personId + ";"
                 connection.query(query, function(err, res) {
